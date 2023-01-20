@@ -69,7 +69,7 @@ param (
     #>
     [Parameter()]
     [IPaddress]
-    $GatewayAddress = "192.168.100.1",
+    $GatewayAddress = "192.168.39.1",
 
     <#
       The network address, in CIDR notation, to be assigned to the new virtual network.
@@ -79,7 +79,7 @@ param (
     #>
     [Parameter()]
     [string]
-    $NetworkAddress = "192.168.100.0/24",
+    $NetworkAddress = "192.168.39.0/24",
 
     <# Target directory for the startup/shutdown scripts.  Default is "$NetworkType-Network-Fix" 
     directory under your user profile. #>
@@ -145,10 +145,10 @@ Out-ConsoleAndLog "Generated Tasks will be run as $UserName with SID: $UserSID"
     }
     # Register the login actions task
     Out-ConsoleAndLog "Registering the startup/login task..."
-    $SourceFile = Join-Path -Path $TaskStage -ChildPath login-task.xml -Resolve
+    $SourceFile = Join-Path -Path $TaskStage -ChildPath wsl-deterministic-task.xml -Resolve
     Register-ScheduledTask -Xml (Get-Content $SourceFile | Out-String) `
-        -TaskName "$NetworkType Fix Task - On Startup" -Force -ea Stop | Out-Null
+        -TaskName "$NetworkType - Set Deterministic Network - On Startup" -Force -ea Stop | Out-Null
     # Remove-Item -Recurse -Path $TaskStage -Force
 #endregion
 
-Out-ConsoleAndLog "All done. $NetworkType Network Fix Startup Script has been installed."
+Out-ConsoleAndLog "All done. $NetworkType Deterministic Network Startup Script has been installed."
