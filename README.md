@@ -1,4 +1,35 @@
-# WSL2 Network Fix for Linux Developers
+# TLDR;
+
+To use WSL effectively in a corporate environment with a VPN solution that actively monitors and alters Windows Route Tables to maintain corporate compliance you can:
+
+1. Clone this repo
+2. Open a powershell window as your normal user to the repo working directory and execute the following command
+```
+.\Install-WslVpnKit.ps1
+```
+3. Close that powershell window and open a powershell window as an administrator to the repo working directory and execute the following command
+```
+.\Install-DeterministicNetwork.ps1
+```
+
+These commands will install two scheduled tasks that are executed at startup. The deterministic network task resets the WSL virtual switch/adapter to a 192.168.39.0/24 network by default. The particular network can be specified when installing the Install-DeterministicNetwork using arguments detailed further in the instructions, if you need to customize that network range.
+
+The WslVpnKit task executes the following WSL command at startup (with a 2 minute delay following startup) "``` wsl.exe -d wsl-vpnkit --cd /app service wsl-vpnkit start ```" so that the wsl-vpn WSL distro is up and running before any additional WSL distros are used. If don't want it running persistently, you can follow the instructions at the [wsl-vpn links](#wsl-vpn-links) below for executing it on-demand or adding it to your bash profile when launching another distro. Having it run at startup means that WSL will continue to function whenever a VPN is connected (or disconnected)*
+
+*Remember that when connecting the VPN, proxy settings need to be updated to match the corporate proxy requirements.
+
+# Additional Details and Links to Further Information
+This repo provides a working solution that solves two WSL problems when WSL is used in a corporate environment with a VPN. The first issue is that WSL doesn't use a deterministic method to generate the network range used by WSL. This results in potential collisions with corporate network ranges.
+
+Additionally, some VPN solutions, including Pulse Secure, can be configured to actively monitor the Windows Route table and override routes of any networks it considers to be different or external to a computer and the corporate network. This means that regardless of the range chosen
+
+See additional information below for even more detail. Additionally, the WSL VPN Kit parts of this solution were adapted from:<a name="wsl-vpn-links"></a>
+https://github.com/AmmarRahman/wsl-vpn
+
+https://github.com/sakai135/wsl-vpnkit
+
+
+# Original Description of solution before 
 
 Normally, Hyper-V/WSL uses a collision-avoidance algorithm when assigning private
 network ranges to the virtual networks that it creates for use by these services.
